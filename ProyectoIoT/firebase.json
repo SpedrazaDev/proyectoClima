@@ -1,0 +1,15 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "**/.venv/**",
+      "proyectoiot-101a5-firebase-adminsdk-fbsvc-bf129984a8.json",
+      "datos_ambientales_realtime.csv",
+      "enviar_datos_firebase.py",
+      "**/__pycache__/**"
+    ]
+  }
+}

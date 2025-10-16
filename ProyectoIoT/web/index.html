@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Consultas Ambientales</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>🌡️ Consultas Ambientales - IoT TEC</h1>
+
+    <div class="filtros">
+      <label>Seleccionar variable:</label>
+        <select id="variableSelect">
+          <option value="temperatura">Temperatura (°C)</option>
+          <option value="humedad">Humedad (%)</option>
+          <option value="viento">Viento (km/h)</option>
+          <option value="Todas las anteriores">Todas las variables</option>
+        </select>
+
+
+      <label>Fecha inicial:</label>
+      <input type="date" id="fechaInicio">
+
+      <label>Fecha final:</label>
+      <input type="date" id="fechaFin">
+
+      <button id="consultarBtn">Consultar</button>
+    </div>
+
+    <div class="resultados">
+      <h2>📈 Resultados</h2>
+      <p id="resumen"></p>
+      <canvas id="grafico"></canvas>
+    </div>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
