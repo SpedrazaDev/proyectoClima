@@ -45,3 +45,49 @@ canvas {
   width: 100%;
   height: 350px;
 }
+
+/* Botones nuevos */
+#pdfBtn, #modoBtn {
+  padding: 10px;
+  border: none;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#pdfBtn {
+  background: #28a745;
+  color: white;
+}
+
+#pdfBtn:hover {
+  background: #1e7e34;
+}
+
+#modoBtn {
+  background: #333;
+  color: white;
+}
+
+#modoBtn:hover {
+  background: #111;
+}
+
+/* 🌙 Modo oscuro */
+.dark-mode {
+  background: #121212;
+  color: #e0e0e0;
+}
+
+.dark-mode .container {
+  background: #1e1e1e;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode button {
+  background: #555;
+}
+
+.dark-mode button:hover {
+  background: #777;
+}

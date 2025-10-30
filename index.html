@@ -7,6 +7,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
 </head>
 <body>
   <div class="container">
@@ -21,7 +23,6 @@
           <option value="Todas las anteriores">Todas las variables</option>
         </select>
 
-
       <label>Fecha inicial:</label>
       <input type="date" id="fechaInicio">
 
@@ -29,6 +30,8 @@
       <input type="date" id="fechaFin">
 
       <button id="consultarBtn">Consultar</button>
+      <button id="pdfBtn">📄 Descargar PDF</button>
+      <button id="modoBtn">🌙 Modo oscuro</button>
     </div>
 
     <div class="resultados">
@@ -39,5 +42,8 @@
   </div>
 
   <script type="module" src="script.js"></script>
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.0/jspdf.plugin.autotable.min.js"></script>
 </body>
 </html>

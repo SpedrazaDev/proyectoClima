@@ -51,6 +51,9 @@ function validarFechas(inicio, fin) {
   return true;
 }
 
+// =========================================================
+// 🔍 CONSULTAR DATOS Y MOSTRAR GRÁFICO
+// =========================================================
 btn.addEventListener("click", async () => {
   const variable = variableSelect.value;
   const fechaInicio = document.getElementById("fechaInicio").value;
@@ -65,7 +68,6 @@ btn.addEventListener("click", async () => {
       return;
     }
 
-    // Convertir y filtrar datos
     const datos = Object.values(snapshot.val());
     const filtrados = datos
       .filter(d => d.fecha >= fechaInicio && d.fecha <= fechaFin)
@@ -79,7 +81,6 @@ btn.addEventListener("click", async () => {
     console.log("✅ Ejemplo de lectura:", filtrados[0]);
     const etiquetas = filtrados.map(d => `${d.fecha} ${d.hora}`);
 
-    // Función para estadísticas
     const calcStats = arr => {
       const nums = arr.filter(v => !isNaN(v));
       if (nums.length === 0) return { max: 0, min: 0, prom: 0 };
@@ -92,12 +93,23 @@ btn.addEventListener("click", async () => {
 
     let datasets = [];
     let resumenTexto = "";
+    let tablaDatos = [];
 
     // =========================================
     // 🔹 Mostrar TODAS las variables
     // =========================================
     if (variable === "Todas las anteriores") {
       const variables = ["temperatura", "humedad", "viento"];
+
+      filtrados.forEach(d => {
+        tablaDatos.push({
+          Fecha: `${d.fecha} ${d.hora}`,
+          Temperatura: parseFloat(d.temperatura).toFixed(2),
+          Humedad: parseFloat(d.humedad).toFixed(2),
+          Viento: parseFloat(d.viento).toFixed(2)
+        });
+      });
+
       variables.forEach(v => {
         const valores = filtrados.map(d => parseFloat(d[v]));
         const stats = calcStats(valores);
@@ -125,6 +137,13 @@ btn.addEventListener("click", async () => {
 
       resumenTexto = `📊 Promedio global: ${stats.prom}${unidad} | 🔼 Máx: ${stats.max}${unidad} | 🔽 Mín: ${stats.min}${unidad}`;
 
+      filtrados.forEach(d => {
+        tablaDatos.push({
+          Fecha: `${d.fecha} ${d.hora}`,
+          [variable.charAt(0).toUpperCase() + variable.slice(1)]: parseFloat(d[variable]).toFixed(2)
+        });
+      });
+
       datasets.push({
         label: `${variable.charAt(0).toUpperCase() + variable.slice(1)} (${unidad})`,
         data: valores,
@@ -136,7 +155,9 @@ btn.addEventListener("click", async () => {
       });
     }
 
-    // Mostrar resumen con saltos de línea
+    // Guardar para el PDF
+    window.ultimoDataset = tablaDatos;
+
     resumen.innerHTML = resumenTexto.replace(/\n/g, "<br>");
 
     // 🧹 Limpiar gráfico anterior
@@ -156,7 +177,7 @@ btn.addEventListener("click", async () => {
             ticks: {
               callback: function (value) {
                 const label = this.getLabelForValue(value);
-                return label.split(" ")[1]; // muestra solo la hora
+                return label.split(" ")[1];
               },
               maxTicksLimit: 10
             }
@@ -181,4 +202,62 @@ btn.addEventListener("click", async () => {
     console.error("❌ Error al consultar Firebase:", error);
     alert("Error al obtener datos. Revisa la consola.");
   }
+});
+
+// ================================
+// 🌓 MODO OSCURO / CLARO
+// ================================
+const modoBtn = document.getElementById("modoBtn");
+modoBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+  modoBtn.textContent = document.body.classList.contains("dark-mode")
+    ? "☀️ Modo claro"
+    : "🌙 Modo oscuro";
+});
+
+// ================================
+// 📄 DESCARGAR PDF (con tabla + gráfico)
+// ================================
+const pdfBtn = document.getElementById("pdfBtn");
+pdfBtn.addEventListener("click", async () => {
+  if (!window.ultimoDataset || window.ultimoDataset.length === 0) {
+    alert("⚠️ Primero realiza una consulta para generar los datos.");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("p", "mm", "a4");
+
+  // 🧾 Encabezado
+  doc.setFontSize(16);
+  doc.text(" Reporte de Consultas Ambientales - IoT TEC", 10, 15);
+
+  // 🖼️ Agregar imagen del gráfico
+  const canvas = document.getElementById("grafico");
+  if (canvas) {
+    const imgData = canvas.toDataURL("image/png", 1.0);
+    doc.addImage(imgData, "PNG", 10, 20, 190, 80); // (x, y, ancho, alto)
+  }
+
+  // 📊 Crear tabla de datos debajo del gráfico
+  const columnas = Object.keys(window.ultimoDataset[0]);
+  const filas = window.ultimoDataset.map(obj => columnas.map(c => obj[c]));
+
+  const startY = canvas ? 110 : 30; // si no hay gráfico, empieza arriba
+
+  doc.autoTable({
+    startY,
+    head: [columnas],
+    body: filas,
+    theme: "grid",
+    headStyles: { fillColor: [22, 160, 133] },
+    styles: { fontSize: 10 }
+  });
+
+  // 📅 Fecha de generación
+  doc.setFontSize(10);
+  doc.text(`Generado el ${new Date().toLocaleString()}`, 10, doc.lastAutoTable.finalY + 10);
+
+  // 💾 Descargar PDF
+  doc.save("reporte_ambiental.pdf");
 });
